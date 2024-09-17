@@ -1,4 +1,4 @@
-# Stock Market Analysis Tool
+# PriceTrack - Stock Market Analysis Tool
 
 This repository contains all the files for a full-stack web application that fetches and visualizes real-time and historical stock market data. The application was developed using Flask and Python for the back-end, with Plotly.js handling the front-end visualizations. The data is sourced from the Yahoo Finance API using the `yfinance` library. Below is a breakdown of the features and techniques involved in the project.
 
