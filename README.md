@@ -48,8 +48,8 @@ This repository contains all the files for a full-stack web application that fet
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/stock-market-app.git
-   cd stock-market-app
+   git clone https://github.com/chigoziennani/PriceTrack-Stock-Market-App.git
+   cd PriceTrack-Stock-Market-App
 2. Install dependencies:
    ```bash
    pip install Flask
