@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PriceTrack — Stock Market Analysis Tool</title>
+    <!-- load plotly.js for charting -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>PriceTrack — Stock Market Analysis Tool</h1>
+        <form id="stock-form">
+            <input type="text" id="symbol" name="symbol" placeholder="Enter Stock Symbol (e.g., AAPL)" required>
+            <button type="submit">Get Stock Data</button>
+        </form>
+
+        <!-- stock details -->
+        <div id="stock-details">
+            <h2>Stock Information</h2>
+            <p><strong>Company Name:</strong> <span id="company-name"></span></p>
+            <p><strong>Market Cap:</strong> <span id="market-cap"></span></p>
+            <p><strong>P/E Ratio:</strong> <span id="pe-ratio"></span></p>
+        </div>
+
+        <!-- chart container -->
+        <div id="stock-chart"></div>
+    </div>
+
+    <!-- footer section -->
+    <footer>
+        <p>Made by Chigozie Nnani. Connect with me on 
+            <a href="https://www.linkedin.com/in/chigoziennani" target="_blank">LinkedIn</a> 
+            and 
+            <a href="https://github.com/chigoziennani" target="_blank">GitHub</a>.
+        </p>
+    </footer>
+
+    <!-- javascript to handle form submission and chart rendering -->
+    <script>
+        document.getElementById('stock-form').addEventListener('submit', function(event) {
+            event.preventDefault();  // prevent the form from refreshing the page
+            
+            const symbol = document.getElementById('symbol').value;
+            
+            // fetch stock data from flask server
+            fetch('/stock', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({ symbol: symbol })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                } else {
+                    // update stock details
+                    document.getElementById('company-name').innerText = data.name;
+                    document.getElementById('market-cap').innerText = data.market_cap;
+                    document.getElementById('pe-ratio').innerText = data.pe_ratio;
+
+                    // clear the existing chart before rendering the new one
+                    Plotly.purge('stock-chart');
+
+                    // create traces for stock data (close price, high, low, volume)
+                    const priceTrace = {
+                        x: data.times,
+                        y: data.prices,
+                        mode: 'lines',
+                        type: 'scatter',
+                        name: 'Close Price'
+                    };
+
+                    const highTrace = {
+                        x: data.times,
+                        y: data.highs,
+                        mode: 'lines',
+                        type: 'scatter',
+                        name: 'High Price'
+                    };
+
+                    const lowTrace = {
+                        x: data.times,
+                        y: data.lows,
+                        mode: 'lines',
+                        type: 'scatter',
+                        name: 'Low Price'
+                    };
+
+                    // chart layout
+                    const layout = {
+                        title: `${symbol} Stock Prices`,
+                        xaxis: { title: 'Time' },
+                        yaxis: { title: 'Price (USD)' }
+                    };
+
+                    // plot the new stock data
+                    Plotly.newPlot('stock-chart', [priceTrace, highTrace, lowTrace], layout);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>
